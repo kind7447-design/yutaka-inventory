@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from ..auth import current_user, hash_password, verify_password
 from ..database import get_db
-from ..models import AppUser, Role
+from ..models import AppUser, PurchaseOrder, Receipt, Role, UsageReport
 from ..templating import templates
 
 router = APIRouter()
@@ -113,6 +113,41 @@ def user_update(
         target.role = Role.admin
         new_active = True
     target.active = new_active
+    db.commit()
+    return RedirectResponse("/users", status_code=303)
+
+
+@router.post("/users/{user_id}/delete")
+def user_delete(user_id: int, request: Request, db: Session = Depends(get_db)):
+    user, redirect = _require_admin(request, db)
+    if redirect:
+        return redirect
+    target = db.query(AppUser).get(user_id)
+    if not target:
+        return RedirectResponse("/users", status_code=303)
+
+    error = None
+    if target.id == user.id:
+        error = "自分自身は削除できません"
+    else:
+        # 操作履歴に紐づくユーザーは削除不可（整合性保持。無効化を案内）
+        used = (
+            db.query(Receipt).filter(Receipt.operator_id == user_id).first()
+            or db.query(UsageReport).filter(UsageReport.operator_id == user_id).first()
+            or db.query(PurchaseOrder).filter(PurchaseOrder.created_by == user_id).first()
+        )
+        if used:
+            error = "このユーザーには操作履歴があるため削除できません。代わりに『無効化』してください"
+
+    if error:
+        users = db.query(AppUser).order_by(AppUser.id).all()
+        return templates.TemplateResponse(
+            request, "users/list.html",
+            {"user": user, "users": users, "Role": Role, "error": error},
+            status_code=400,
+        )
+
+    db.delete(target)
     db.commit()
     return RedirectResponse("/users", status_code=303)
 

@@ -5,6 +5,7 @@
   <h2>ユーザー管理</h2>
   <a class="btn" href="/users/new">＋ ユーザー追加</a>
 </div>
+{% if error %}<div class="error" style="margin-top:10px;">{{ error }}</div>{% endif %}
 
 <table style="margin-top:12px;">
   <thead>
@@ -28,6 +29,12 @@
           <input name="new_password" placeholder="新パスワード" required style="width:130px;">
           <button class="btn sm" type="submit">設定</button>
         </form>
+        {% if u.id != user.id %}
+        <form method="post" action="/users/{{ u.id }}/delete" style="display:inline;"
+              onsubmit="return confirm('ユーザー「{{ u.name }}」を削除します。よろしいですか？');">
+          <button class="btn sm" type="submit" style="background:#c62828;">削除</button>
+        </form>
+        {% endif %}
       </td>
     </tr>
     {% endfor %}
