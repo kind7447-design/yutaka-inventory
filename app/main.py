@@ -5,8 +5,9 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from starlette.middleware.sessions import SessionMiddleware
 
-from .auth import current_user
+from .auth import current_user, hash_password
 from .database import Base, SessionLocal, engine, get_db
+from .models import AppUser, Role
 from .routers import (
     auth_routes,
     drawing_routes,
@@ -23,10 +24,20 @@ from .templating import templates
 # 開発用: 起動時にテーブル作成（本番はAlembic想定）
 Base.metadata.create_all(bind=engine)
 
-# 設定の既定値を投入
+# 設定の既定値＋初回起動時の管理者を投入
 _db = SessionLocal()
 try:
     ensure_defaults(_db)
+    # ユーザーが1人もいなければ管理者を自動作成（Render無料はShell不可のため）
+    if not _db.query(AppUser).first():
+        _db.add(AppUser(
+            login_id="admin",
+            name="管理者",
+            password_hash=hash_password(os.getenv("ADMIN_PASSWORD", "admin")),
+            role=Role.admin,
+            active=True,
+        ))
+        _db.commit()
 finally:
     _db.close()
 
