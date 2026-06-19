@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}ユーザー{{ '編集' if target else '追加' }}{% endblock %}
+{% block content %}
+<h2>ユーザー{{ '編集' if target else '追加' }}</h2>
+{% if error %}<div class="error">{{ error }}</div>{% endif %}
+<div class="card">
+  <form method="post" action="{{ ('/users/' ~ target.id ~ '/edit') if target else '/users/new' }}">
+    <label>ログインID</label>
+    {% if target %}
+      <input value="{{ target.login_id }}" disabled>
+    {% else %}
+      <input name="login_id" required>
+    {% endif %}
+
+    <label>氏名</label>
+    <input name="name" value="{{ target.name if target else '' }}" required>
+
+    {% if not target %}
+    <label>初期パスワード</label>
+    <input name="password" required>
+    {% endif %}
+
+    <label>権限</label>
+    <select name="role">
+      <option value="staff" {{ 'selected' if target and target.role.value=='staff' else '' }}>一般</option>
+      <option value="admin" {{ 'selected' if target and target.role.value=='admin' else '' }}>管理者</option>
+    </select>
+
+    {% if target %}
+    <label style="margin-top:12px;">
+      <input type="checkbox" name="active" value="1" style="width:auto;"
+             {{ 'checked' if target.active else '' }}> 有効（チェックを外すとログイン不可）
+    </label>
+    {% if target.id == user.id %}
+    <p style="color:#b26a00; font-size:13px;">※自分自身は管理者・有効のまま固定されます（締め出し防止）</p>
+    {% endif %}
+    {% endif %}
+
+    <div style="margin-top:16px;">
+      <button class="btn" type="submit">保存</button>
+      <a class="btn gray" href="/users">戻る</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

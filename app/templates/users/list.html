@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}ユーザー管理{% endblock %}
+{% block content %}
+<div style="display:flex; justify-content:space-between; align-items:center;">
+  <h2>ユーザー管理</h2>
+  <a class="btn" href="/users/new">＋ ユーザー追加</a>
+</div>
+
+<table style="margin-top:12px;">
+  <thead>
+    <tr><th>ID</th><th>ログインID</th><th>氏名</th><th>権限</th><th>状態</th><th>操作</th></tr>
+  </thead>
+  <tbody>
+    {% for u in users %}
+    <tr>
+      <td>{{ u.id }}</td>
+      <td>{{ u.login_id }}</td>
+      <td>{{ u.name }}</td>
+      <td>{% if u.role.value == 'admin' %}<span class="badge chotatsu">管理者</span>
+          {% else %}<span class="badge shikyu">一般</span>{% endif %}</td>
+      <td>{{ '有効' if u.active else '無効' }}</td>
+      <td style="white-space:nowrap;">
+        <a class="btn gray sm" href="/users/{{ u.id }}/edit">編集</a>
+        <button class="btn gray sm" type="button"
+          onclick="document.getElementById('pw{{ u.id }}').style.display='inline-flex'">PW初期化</button>
+        <form id="pw{{ u.id }}" method="post" action="/users/{{ u.id }}/reset-password"
+              style="display:none; gap:4px; align-items:center; margin-top:4px;">
+          <input name="new_password" placeholder="新パスワード" required style="width:130px;">
+          <button class="btn sm" type="submit">設定</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p style="margin-top:12px;"><a class="btn gray" href="/">メニューへ</a></p>
+{% endblock %}

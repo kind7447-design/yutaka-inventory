@@ -17,6 +17,7 @@ from .routers import (
     order_routes,
     setting_routes,
     usage_routes,
+    user_routes,
 )
 from .settings_store import ensure_defaults
 from .templating import templates
@@ -54,6 +55,7 @@ app.include_router(usage_routes.router)
 app.include_router(history_routes.router)
 app.include_router(setting_routes.router)
 app.include_router(drawing_routes.router)
+app.include_router(user_routes.router)
 
 
 @app.get("/")

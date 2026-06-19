@@ -29,6 +29,9 @@
     <a class="btn gray" href="/items">在庫確認（QR/検索）</a>
     <a class="btn gray" href="/history">履歴</a>
     <a class="btn gray" href="/settings">設定</a>
+    {% if user.role.value == 'admin' %}
+    <a class="btn gray" href="/users">ユーザー管理</a>
+    {% endif %}
   </div>
 </div>
 {% endblock %}
