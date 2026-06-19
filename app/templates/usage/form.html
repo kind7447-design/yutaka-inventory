@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}使用・仕損報告{% endblock %}
+{% block content %}
+<h2>使用・仕損報告</h2>
+{% if error %}<div class="error">{{ error }}</div>{% endif %}
+
+<datalist id="itemlist">
+  {% for it in items %}<option value="{{ it.item_code }}">{{ it.item_code }} / {{ it.name }}</option>{% endfor %}
+</datalist>
+
+<div class="card" style="margin-bottom:16px;">
+  <form method="post" action="/usage">
+    <div class="row">
+      <div><label>固有番号</label><input name="item_code" list="itemlist" value="{{ code }}" required></div>
+      <div style="max-width:120px;"><label>数量</label><input name="qty" type="number" min="1" required></div>
+      <div style="max-width:160px;"><label>区分</label>
+        <select name="report_type">
+          <option value="used">使用</option>
+          <option value="defect">仕損</option>
+        </select>
+      </div>
+    </div>
+    <label>備考</label>
+    <input name="note">
+    <div style="margin-top:12px;">
+      <button class="btn" type="submit">報告（在庫を減らす）</button>
+      <a class="btn gray" href="/">メニューへ</a>
+    </div>
+  </form>
+</div>
+
+<h3>直近の報告</h3>
+<table>
+  <thead><tr><th>日時</th><th>固有番号</th><th>名称</th><th>区分</th><th>数量</th><th>担当</th><th>備考</th></tr></thead>
+  <tbody>
+    {% for r in recent %}
+    <tr>
+      <td>{{ r.reported_at.strftime('%Y-%m-%d %H:%M') if r.reported_at else '' }}</td>
+      <td>{{ r.item.item_code }}</td>
+      <td>{{ r.item.name }}</td>
+      <td>{{ '使用' if r.report_type.value=='used' else '仕損' }}</td>
+      <td style="text-align:right;">{{ r.qty }}</td>
+      <td>{{ r.operator.name if r.operator else '' }}</td>
+      <td>{{ r.note or '' }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7" style="text-align:center; color:#888;">報告なし</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,19 @@
+# ローカル開発用DB（本番はNeonを使用）
+*.db
+yutaka_inventory.db
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# OS / エディタ
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# 環境変数
+.env

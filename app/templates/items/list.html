@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}品目一覧{% endblock %}
+{% block content %}
+<div style="display:flex; justify-content:space-between; align-items:center;">
+  <h2>品目一覧
+    {% if kind == 'shikyu' %}<span class="badge shikyu">支給品</span>
+    {% elif kind == 'chotatsu' %}<span class="badge chotatsu">調達品</span>{% endif %}
+  </h2>
+  <a class="btn" href="/items/new">＋ 品目登録</a>
+</div>
+
+<form method="get" action="/items" style="margin:12px 0; display:flex; gap:8px;">
+  <input type="hidden" name="kind" value="{{ kind }}">
+  <input name="q" value="{{ q }}" placeholder="固有番号・名称で検索">
+  <button class="btn" type="submit">検索</button>
+</form>
+
+<form method="get" action="/qr/print" target="_blank" id="qrform">
+  <table>
+    <thead>
+      <tr>
+        <th style="width:36px;">QR</th>
+        <th>固有番号</th><th>区分</th><th>名称</th><th>材質/部番</th>
+        <th style="text-align:right;">在庫</th><th>単位</th><th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for it in items %}
+      <tr>
+        <td style="text-align:center;"><input type="checkbox" name="ids" value="{{ it.id }}" style="width:auto;"></td>
+        <td>{{ it.item_code }}</td>
+        <td>{% if it.kind.value == 'shikyu' %}<span class="badge shikyu">支給</span>
+            {% else %}<span class="badge chotatsu">調達</span>{% endif %}</td>
+        <td>{{ it.name }}</td>
+        <td>{{ it.material or '' }}</td>
+        <td style="text-align:right;">{{ it.stock_qty }}</td>
+        <td>{{ it.unit }}</td>
+        <td style="white-space:nowrap;">
+          <a class="btn gray sm" href="/items/{{ it.id }}/edit">編集</a>
+          <a class="btn gray sm" href="/items/{{ it.id }}/drawings">図面</a>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="8" style="text-align:center; color:#888;">品目がありません</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div style="margin-top:12px;">
+    <button class="btn" type="submit" onclick="return prepIds()">選択した品目のQRを印刷（A5・2×2）</button>
+  </div>
+</form>
+
+<script>
+  // チェックされたidをカンマ連結して ids=... の単一パラメータにする
+  function prepIds() {
+    const boxes = document.querySelectorAll('input[name="ids"]:checked');
+    if (boxes.length === 0) { alert('印刷する品目を選択してください'); return false; }
+    const ids = Array.from(boxes).map(b => b.value).join(',');
+    const form = document.getElementById('qrform');
+    // 既存のhidden idsを除去して1つにまとめる
+    boxes.forEach(b => b.removeAttribute('name'));
+    const hidden = document.createElement('input');
+    hidden.type = 'hidden'; hidden.name = 'ids'; hidden.value = ids;
+    form.appendChild(hidden);
+    return true;
+  }
+</script>
+{% endblock %}

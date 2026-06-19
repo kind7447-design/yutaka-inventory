@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}メニュー{% endblock %}
+{% block content %}
+<h2>メニュー</h2>
+
+<div class="card" style="margin-bottom:16px;">
+  <h3 style="margin-top:0; color:#c2691c;">調達品（自社手配）</h3>
+  <div class="row">
+    <a class="btn" href="/items?kind=chotatsu">品目マスタ</a>
+    <a class="btn" href="/orders/new?kind=chotatsu">発注（注文依頼書＋加工依頼書）</a>
+    <a class="btn gray" href="/orders?kind=chotatsu">発注一覧</a>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:16px;">
+  <h3 style="margin-top:0; color:#2e7d32;">支給品（客先支給）</h3>
+  <div class="row">
+    <a class="btn" href="/items?kind=shikyu">品目マスタ</a>
+    <a class="btn" href="/orders/new?kind=shikyu_prep">客先準備分 発注（注文依頼書のみ）</a>
+    <a class="btn gray" href="/orders?kind=shikyu_prep">発注一覧</a>
+  </div>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0;">共通</h3>
+  <div class="row">
+    <a class="btn" href="/inbound">入荷予定・受入消込</a>
+    <a class="btn" href="/usage">使用・仕損報告</a>
+    <a class="btn gray" href="/items">在庫確認（QR/検索）</a>
+    <a class="btn gray" href="/history">履歴</a>
+    <a class="btn gray" href="/settings">設定</a>
+  </div>
+</div>
+{% endblock %}

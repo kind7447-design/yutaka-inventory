@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}図面登録{% endblock %}
+{% block content %}
+<h2>図面登録　{{ item.item_code }} / {{ item.name }}</h2>
+
+<div class="card" style="margin-bottom:12px;">
+  <form method="post" action="/items/{{ item.id }}/drawings" enctype="multipart/form-data">
+    <label>図面ファイル（画像/PDF）</label>
+    <input type="file" name="file" accept="image/*,application/pdf" required>
+    <div style="margin-top:12px;">
+      <button class="btn" type="submit">アップロード</button>
+      <a class="btn gray" href="/items/{{ item.id }}/edit">品目編集へ</a>
+    </div>
+  </form>
+</div>
+
+<table>
+  <thead><tr><th>ファイル名</th><th>登録日時</th><th>表示</th></tr></thead>
+  <tbody>
+    {% for d in drawings %}
+    <tr>
+      <td>{{ d.filename }}</td>
+      <td>{{ d.uploaded_at.strftime('%Y-%m-%d %H:%M') if d.uploaded_at else '' }}</td>
+      <td><a class="btn sm" href="/drawings/{{ d.id }}" target="_blank">開く</a></td>
+    </tr>
+    {% else %}<tr><td colspan="3" style="text-align:center;color:#888;">図面なし</td></tr>{% endfor %}
+  </tbody>
+</table>
+<p style="margin-top:12px;">
+  <a class="btn gray" href="/items?kind={{ item.kind.value }}">品目一覧へ</a>
+</p>
+{% endblock %}

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>QRコード印刷</title>
+  <style>
+    @page { size: A5; margin: 0; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: "Meiryo", sans-serif; }
+    .toolbar { padding: 10px; text-align: center; background: #eee; }
+    .toolbar button { padding: 8px 16px; font-size: 14px; cursor: pointer; }
+    /* A5 1ページ = 148mm x 210mm を 2x2 に分割 */
+    .page { width: 148mm; height: 210mm; display: grid;
+            grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr;
+            page-break-after: always; }
+    .cell { border: 1px dashed #bbb; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; padding: 4mm; }
+    .cell img { width: 50mm; height: 50mm; }
+    .cell .code { margin-top: 4mm; font-size: 14pt; font-weight: bold; word-break: break-all; text-align: center; }
+    .cell.empty { border-color: #eee; }
+    @media print { .toolbar { display: none; } .cell { border-color: transparent; } }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <button onclick="window.print()">印刷する</button>
+    <span style="margin-left:12px; color:#555;">A5・2×2面付け（左上→右上→左下→右下）</span>
+  </div>
+  {% for page in pages %}
+  <div class="page">
+    {% for cell in page %}
+    <div class="cell">
+      <img src="{{ cell.qr }}" alt="QR">
+      <div class="code">{{ cell.item_code }}</div>
+    </div>
+    {% endfor %}
+    {# 4枠に満たない分は空セルで埋める #}
+    {% for _ in range(4 - page|length) %}
+    <div class="cell empty"></div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</body>
+</html>

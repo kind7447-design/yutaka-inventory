@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}発注一覧{% endblock %}
+{% block content %}
+<div style="display:flex; justify-content:space-between; align-items:center;">
+  <h2>発注一覧
+    {% if kind == 'chotatsu' %}<span class="badge chotatsu">調達</span>
+    {% elif kind == 'shikyu_prep' %}<span class="badge shikyu">客先準備分</span>{% endif %}
+  </h2>
+  <div>
+    <a class="btn" href="/orders/new?kind=chotatsu">＋ 調達発注</a>
+    <a class="btn gray" href="/orders/new?kind=shikyu_prep">＋ 客先準備分</a>
+  </div>
+</div>
+
+<table style="margin-top:12px;">
+  <thead>
+    <tr><th>伝票NO</th><th>日付</th><th>区分</th><th>発注先</th><th>明細数</th><th>状態</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for po in orders %}
+    <tr>
+      <td>{{ po.order_no or '-' }}</td>
+      <td>{{ po.order_date or '' }}</td>
+      <td>{% if po.kind.value == 'chotatsu' %}<span class="badge chotatsu">調達</span>
+          {% else %}<span class="badge shikyu">客先準備</span>{% endif %}</td>
+      <td>{{ po.supplier or '' }}</td>
+      <td>{{ po.lines|length }}</td>
+      <td>{{ po.status.value }}</td>
+      <td><a class="btn sm" href="/orders/{{ po.id }}">詳細</a></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7" style="text-align:center; color:#888;">発注がありません</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p style="margin-top:12px;"><a class="btn gray" href="/">メニューへ</a></p>
+{% endblock %}

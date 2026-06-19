@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}入荷予定・受入{% endblock %}
+{% block content %}
+<h2>入荷予定・受入消込</h2>
+
+<datalist id="itemlist">
+  {% for it in items %}<option value="{{ it.item_code }}">{{ it.item_code }} / {{ it.name }}</option>{% endfor %}
+</datalist>
+
+<div class="card" style="margin-bottom:12px;">
+  <form method="post" action="/inbound/new" class="row" style="align-items:flex-end;">
+    <div><label>固有番号</label><input name="item_code" list="itemlist" required></div>
+    <div style="max-width:120px;"><label>予定数</label><input name="plan_qty" type="number" min="1" required></div>
+    <div style="max-width:170px;"><label>入荷予定日</label><input name="plan_date" type="date"></div>
+    <div style="max-width:140px;"><button class="btn" type="submit">入荷予定を登録</button></div>
+  </form>
+</div>
+
+<div style="margin-bottom:8px;">
+  <a class="btn sm {{ '' if status=='waiting' else 'gray' }}" href="/inbound?status=waiting">未入荷</a>
+  <a class="btn sm {{ '' if status=='received' else 'gray' }}" href="/inbound?status=received">入荷済</a>
+</div>
+
+<table>
+  <thead>
+    <tr><th>固有番号</th><th>名称</th><th>予定数</th><th>予定日</th><th>状態</th><th>受入</th></tr>
+  </thead>
+  <tbody>
+    {% for p in plans %}
+    <tr>
+      <td>{{ p.item.item_code }}</td>
+      <td>{{ p.item.name }}</td>
+      <td style="text-align:right;">{{ p.plan_qty }}</td>
+      <td>{{ p.plan_date or '' }}</td>
+      <td>{{ '未入荷' if p.status.value=='waiting' else '入荷済' }}</td>
+      <td>
+        {% if p.status.value == 'waiting' %}
+        <form method="post" action="/inbound/{{ p.id }}/receive" style="display:flex; gap:4px; align-items:center;">
+          <input name="qty" type="number" min="1" value="{{ p.plan_qty }}" style="width:70px;">
+          <button class="btn sm" type="submit">消込</button>
+        </form>
+        {% else %}-{% endif %}
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6" style="text-align:center; color:#888;">該当データなし</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p style="margin-top:12px;"><a class="btn gray" href="/">メニューへ</a></p>
+{% endblock %}

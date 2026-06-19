@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}発注詳細{% endblock %}
+{% block content %}
+<h2>発注詳細　伝票NO {{ po.order_no or po.id }}</h2>
+
+<div class="card" style="margin-bottom:12px;">
+  <div class="row">
+    <div><strong>区分:</strong>
+      {% if po.kind.value == 'chotatsu' %}調達{% else %}客先準備分{% endif %}</div>
+    <div><strong>発注日:</strong> {{ po.order_date or '' }}</div>
+    <div><strong>発注先:</strong> {{ po.supplier or '' }}</div>
+    <div><strong>納入場所:</strong> {{ po.deliver_to or '' }}</div>
+  </div>
+</div>
+
+<table>
+  <thead>
+    <tr><th>固有番号</th><th>名称</th><th>材質/部番</th><th>数量</th><th>単位</th>
+        <th>@単価</th><th>納期</th><th>リピート</th><th>備考</th></tr>
+  </thead>
+  <tbody>
+    {% for ln in po.lines %}
+    <tr>
+      <td>{{ ln.item.item_code }}</td>
+      <td>{{ ln.item.name }}</td>
+      <td>{{ ln.item.material or '' }}</td>
+      <td style="text-align:right;">{{ ln.qty }}</td>
+      <td>{{ ln.item.unit }}</td>
+      <td style="text-align:right;">{{ '%.0f'|format(ln.unit_price) if ln.unit_price is not none else '' }}</td>
+      <td>{{ ln.due_date or '' }}</td>
+      <td>{{ 'リピート' if ln.repeat_flag else '' }}</td>
+      <td>{{ ln.note or '' }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div style="margin-top:16px;">
+  <a class="btn" href="/orders/{{ po.id }}/order-sheet.pdf" target="_blank">注文依頼書 PDF（A5）</a>
+  {% if po.kind.value == 'chotatsu' %}
+  <a class="btn" href="/orders/{{ po.id }}/process-sheet.pdf" target="_blank">加工依頼書 PDF（A5）</a>
+  {% endif %}
+  <a class="btn gray" href="/orders?kind={{ po.kind.value }}">一覧へ</a>
+</div>
+{% endblock %}

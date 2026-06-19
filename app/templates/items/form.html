@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}品目登録/編集{% endblock %}
+{% block content %}
+<h2>{{ '品目編集' if item else '品目登録' }}</h2>
+{% if error %}<div class="error">{{ error }}</div>{% endif %}
+<div class="card">
+  <form method="post" action="{{ ('/items/' ~ item.id ~ '/edit') if item else '/items/new' }}">
+    <div class="row">
+      <div>
+        <label>固有番号 ※英数記号（例: USC1549G11）</label>
+        <input name="item_code" value="{{ item.item_code if item else '' }}" required>
+      </div>
+      <div>
+        <label>区分</label>
+        <select name="kind">
+          <option value="shikyu" {{ 'selected' if item and item.kind.value=='shikyu' else '' }}>支給品</option>
+          <option value="chotatsu" {{ 'selected' if item and item.kind.value=='chotatsu' else '' }}>調達品</option>
+        </select>
+      </div>
+    </div>
+    <label>名称（日本語可）</label>
+    <input name="name" value="{{ item.name if item else '' }}" required>
+    <div class="row">
+      <div><label>材質/部品番号</label><input name="material" value="{{ item.material or '' if item else '' }}"></div>
+      <div><label>種類</label><input name="category" value="{{ item.category or '' if item else '' }}"></div>
+    </div>
+    <div class="row">
+      <div><label>板厚</label><input name="thickness" value="{{ item.thickness or '' if item else '' }}"></div>
+      <div><label>サイズ</label><input name="size" value="{{ item.size or '' if item else '' }}"></div>
+      <div><label>単位</label><input name="unit" value="{{ item.unit if item else '個' }}"></div>
+    </div>
+    <label>発注先 / 支給元</label>
+    <input name="supplier" value="{{ item.supplier or '' if item else '' }}">
+    <label>備考</label>
+    <textarea name="note" rows="2">{{ item.note or '' if item else '' }}</textarea>
+    <div style="margin-top:16px;">
+      <button class="btn" type="submit">保存</button>
+      <a class="btn gray" href="/items">戻る</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

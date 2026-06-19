@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}発注作成{% endblock %}
+{% block content %}
+<h2>発注作成
+  {% if kind == 'chotatsu' %}<span class="badge chotatsu">調達（加工依頼書あり）</span>
+  {% else %}<span class="badge shikyu">客先準備分（注文依頼書のみ）</span>{% endif %}
+</h2>
+{% if error %}<div class="error">{{ error }}</div>{% endif %}
+
+<datalist id="itemlist">
+  {% for it in items %}
+  <option value="{{ it.item_code }}">{{ it.item_code }} / {{ it.name }}</option>
+  {% endfor %}
+</datalist>
+
+<form method="post" action="/orders/new">
+  <input type="hidden" name="kind" value="{{ kind }}">
+  <div class="card" style="margin-bottom:12px;">
+    <div class="row">
+      <div><label>伝票NO</label><input name="order_no" value="{{ order_no }}"></div>
+      <div><label>発注日</label><input type="date" name="order_date" value="{{ today }}"></div>
+    </div>
+    <div class="row">
+      <div><label>発注先（◯◯ 殿）</label><input name="supplier" required></div>
+      <div><label>納入場所</label><input name="deliver_to" value="{{ default_deliver_to }}"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <label>明細（1枚あたり4件まで・5件以上は自動で次ページ）</label>
+    <table id="lines">
+      <thead>
+        <tr><th>固有番号</th><th>数量</th><th>@単価(税抜)</th><th>納期</th><th>リピート</th><th>備考</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <button type="button" class="btn gray sm" onclick="addRow()" style="margin-top:8px;">＋ 明細行を追加</button>
+  </div>
+
+  <div style="margin-top:16px;">
+    <button class="btn" type="submit">保存して発注を作成</button>
+    <a class="btn gray" href="/orders?kind={{ kind }}">戻る</a>
+  </div>
+</form>
+
+<script>
+  let idx = 0;
+  function addRow() {
+    const tb = document.querySelector('#lines tbody');
+    const tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td><input name="item_code" list="itemlist" placeholder="固有番号"></td>' +
+      '<td><input name="qty" type="number" min="1" style="width:80px;"></td>' +
+      '<td><input name="unit_price" type="number" step="0.01" min="0" style="width:100px;"></td>' +
+      '<td><input name="due_date" type="date"></td>' +
+      '<td style="text-align:center;"><input name="repeat" type="checkbox" value="' + idx + '" style="width:auto;"></td>' +
+      '<td><input name="note"></td>';
+    tb.appendChild(tr);
+    idx++;
+  }
+  // 初期4行
+  for (let i = 0; i < 4; i++) addRow();
+</script>
+{% endblock %}

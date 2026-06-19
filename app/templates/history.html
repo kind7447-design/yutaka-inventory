@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}履歴{% endblock %}
+{% block content %}
+<h2>履歴</h2>
+
+<div style="margin-bottom:8px;">
+  <a class="btn sm {{ '' if tab=='order' else 'gray' }}" href="/history?tab=order">依頼履歴</a>
+  <a class="btn sm {{ '' if tab=='receipt' else 'gray' }}" href="/history?tab=receipt">入荷履歴</a>
+  <a class="btn sm {{ '' if tab=='usage' else 'gray' }}" href="/history?tab=usage">使用履歴</a>
+</div>
+
+<form method="get" action="/history" style="display:flex; gap:8px; margin-bottom:12px;">
+  <input type="hidden" name="tab" value="{{ tab }}">
+  <input name="q" value="{{ q }}" placeholder="固有番号・名称で絞り込み">
+  <button class="btn" type="submit">検索</button>
+</form>
+
+{% if tab == 'receipt' %}
+<table>
+  <thead><tr><th>日時</th><th>固有番号</th><th>名称</th><th>入荷数</th><th>担当</th></tr></thead>
+  <tbody>
+    {% for r in rows %}
+    <tr>
+      <td>{{ r.received_at.strftime('%Y-%m-%d %H:%M') if r.received_at else '' }}</td>
+      <td>{{ r.item.item_code }}</td><td>{{ r.item.name }}</td>
+      <td style="text-align:right;">{{ r.qty }}</td>
+      <td>{{ r.operator.name if r.operator else '' }}</td>
+    </tr>
+    {% else %}<tr><td colspan="5" style="text-align:center;color:#888;">データなし</td></tr>{% endfor %}
+  </tbody>
+</table>
+{% elif tab == 'usage' %}
+<table>
+  <thead><tr><th>日時</th><th>固有番号</th><th>名称</th><th>区分</th><th>数量</th><th>担当</th><th>備考</th></tr></thead>
+  <tbody>
+    {% for r in rows %}
+    <tr>
+      <td>{{ r.reported_at.strftime('%Y-%m-%d %H:%M') if r.reported_at else '' }}</td>
+      <td>{{ r.item.item_code }}</td><td>{{ r.item.name }}</td>
+      <td>{{ '使用' if r.report_type.value=='used' else '仕損' }}</td>
+      <td style="text-align:right;">{{ r.qty }}</td>
+      <td>{{ r.operator.name if r.operator else '' }}</td>
+      <td>{{ r.note or '' }}</td>
+    </tr>
+    {% else %}<tr><td colspan="7" style="text-align:center;color:#888;">データなし</td></tr>{% endfor %}
+  </tbody>
+</table>
+{% else %}
+<table>
+  <thead><tr><th>伝票NO</th><th>発注日</th><th>固有番号</th><th>名称</th><th>数量</th><th>@単価</th><th>納期</th></tr></thead>
+  <tbody>
+    {% for r in rows %}
+    <tr>
+      <td><a href="/orders/{{ r.po.id }}">{{ r.po.order_no or r.po.id }}</a></td>
+      <td>{{ r.po.order_date or '' }}</td>
+      <td>{{ r.item.item_code }}</td><td>{{ r.item.name }}</td>
+      <td style="text-align:right;">{{ r.qty }}</td>
+      <td style="text-align:right;">{{ '%.0f'|format(r.unit_price) if r.unit_price is not none else '' }}</td>
+      <td>{{ r.due_date or '' }}</td>
+    </tr>
+    {% else %}<tr><td colspan="7" style="text-align:center;color:#888;">データなし</td></tr>{% endfor %}
+  </tbody>
+</table>
+{% endif %}
+<p style="margin-top:12px;"><a class="btn gray" href="/">メニューへ</a></p>
+{% endblock %}
