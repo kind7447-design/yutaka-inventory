@@ -60,6 +60,7 @@ def item_create(
     unit: str = Form("個"),
     supplier: str = Form(""),
     note: str = Form(""),
+    stock_qty: int = Form(0),
     db: Session = Depends(get_db),
 ):
     user = _require_login(request, db)
@@ -80,7 +81,7 @@ def item_create(
     item = Item(
         item_code=item_code, kind=kind, name=name.strip(), material=material,
         category=category, thickness=thickness, size=size, unit=unit or "個",
-        supplier=supplier, note=note,
+        supplier=supplier, note=note, stock_qty=stock_qty,
     )
     db.add(item)
     db.commit()
@@ -115,6 +116,7 @@ def item_update(
     unit: str = Form("個"),
     supplier: str = Form(""),
     note: str = Form(""),
+    stock_qty: int = Form(0),
     db: Session = Depends(get_db),
 ):
     user = _require_login(request, db)
@@ -144,6 +146,7 @@ def item_update(
     item.unit = unit or "個"
     item.supplier = supplier
     item.note = note
+    item.stock_qty = stock_qty
     db.commit()
     return RedirectResponse("/items", status_code=303)
 

@@ -29,6 +29,9 @@
       <div><label>サイズ</label><input name="size" value="{{ item.size or '' if item else '' }}"></div>
       <div><label>単位</label><input name="unit" value="{{ item.unit if item else '個' }}"></div>
     </div>
+    <div class="row">
+      <div><label>現在庫数</label><input name="stock_qty" type="number" value="{{ item.stock_qty if item else 0 }}" min="0"></div>
+    </div>
     <label>発注先 / 支給元</label>
     <input name="supplier" value="{{ item.supplier or '' if item else '' }}">
     <label>備考</label>
