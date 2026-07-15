@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from ..auth import current_user
 from ..database import get_db
-from ..models import Item, Kind
+from ..models import InboundPlan, Item, Kind, PurchaseOrderLine, Receipt, UsageReport
 from ..qr import qr_data_uri
 from ..templating import templates
 
@@ -147,6 +147,35 @@ def item_update(
     item.supplier = supplier
     item.note = note
     item.stock_qty = stock_qty
+    db.commit()
+    return RedirectResponse("/items", status_code=303)
+
+
+@router.post("/items/{item_id}/delete")
+def item_delete(item_id: int, request: Request, db: Session = Depends(get_db)):
+    user = _require_login(request, db)
+    if not user:
+        return RedirectResponse("/login", status_code=303)
+    item = db.query(Item).get(item_id)
+    if not item:
+        return RedirectResponse("/items", status_code=303)
+
+    used = (
+        db.query(Receipt).filter(Receipt.item_id == item_id).first()
+        or db.query(UsageReport).filter(UsageReport.item_id == item_id).first()
+        or db.query(PurchaseOrderLine).filter(PurchaseOrderLine.item_id == item_id).first()
+        or db.query(InboundPlan).filter(InboundPlan.item_id == item_id).first()
+    )
+    if used:
+        items = db.query(Item).order_by(Item.item_code).all()
+        return templates.TemplateResponse(
+            request, "items/list.html",
+            {"user": user, "items": items, "q": "", "kind": "",
+             "error": f"「{item.item_code}」には履歴があるため削除できません"},
+            status_code=400,
+        )
+
+    db.delete(item)
     db.commit()
     return RedirectResponse("/items", status_code=303)
 
