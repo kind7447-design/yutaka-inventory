@@ -17,80 +17,71 @@
 
 {% if error %}<div class="error" style="margin-bottom:10px;">{{ error }}</div>{% endif %}
 
-<form method="get" action="/qr/print" target="_blank" id="qrform">
-  <table style="table-layout:fixed;">
-    <thead>
-      <tr>
-        <th style="width:36px;">QR</th>
-        <th style="width:20%;">固有番号</th>
-        <th style="width:56px;">区分</th>
-        <th style="width:16%;">名称</th>
-        <th style="width:13%;">材質/部番</th>
-        <th style="width:52px; text-align:right;">在庫</th>
-        <th style="width:40px;">単位</th>
-        <th style="width:64px;">画像</th>
-        <th style="width:100px;"></th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for it in items %}
-      <tr>
-        <td style="text-align:center;"><input type="checkbox" name="ids" value="{{ it.id }}" style="width:auto;"></td>
-        <td>{{ it.item_code }}</td>
-        <td>{% if it.kind.value == 'shikyu' %}<span class="badge shikyu">支給</span>
-            {% else %}<span class="badge chotatsu">調達</span>{% endif %}</td>
-        <td>{{ it.name }}</td>
-        <td>{{ it.material or '' }}</td>
-        <td style="text-align:right;">{{ it.stock_qty }}</td>
-        <td>{{ it.unit }}</td>
-        <td style="text-align:center; padding:4px;">
-          {% if it.image_data %}
-          <div>
-            <a href="/items/{{ it.id }}/image" target="_blank">
-              <img src="/items/{{ it.id }}/image"
-                   style="width:48px; height:48px; object-fit:cover; border-radius:4px; border:1px solid #ddd; display:block; margin:0 auto;">
-            </a>
-            <form method="post" action="/items/{{ it.id }}/image/delete" style="margin-top:2px;"
-                  onsubmit="return confirm('「{{ it.item_code }}」の画像を削除しますか？');">
-              <button type="submit" style="font-size:10px; padding:1px 6px; background:#c62828; color:#fff; border:none; border-radius:3px; cursor:pointer;">削除</button>
-            </form>
-          </div>
-          {% else %}
-          <a href="/items/{{ it.id }}/image/edit" style="font-size:11px; color:#888;">＋登録</a>
-          {% endif %}
-        </td>
-        <td style="white-space:nowrap;">
-          <a class="btn gray sm" href="/items/{{ it.id }}/edit">編集</a>
-          <a class="btn gray sm" href="/items/{{ it.id }}/drawings">図面</a>
-          <form method="post" action="/items/{{ it.id }}/delete" style="display:inline;"
-                onsubmit="return confirm('「{{ it.item_code }}」を削除します。よろしいですか？');">
-            <button class="btn sm" type="submit" style="background:#c62828;">削除</button>
-          </form>
-        </td>
-      </tr>
-      {% else %}
-      <tr><td colspan="9" style="text-align:center; color:#888;">品目がありません</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  <div style="margin-top:12px;">
-    <button class="btn" type="submit" onclick="return prepIds()">選択した品目のQRを印刷（A5・2×2）</button>
-  </div>
-</form>
+<!-- テーブルはフォームの外に置く（フォームの入れ子を避けるため） -->
+<table style="table-layout:fixed;">
+  <thead>
+    <tr>
+      <th style="width:36px;">QR</th>
+      <th style="width:20%;">固有番号</th>
+      <th style="width:56px;">区分</th>
+      <th style="width:16%;">名称</th>
+      <th style="width:13%;">材質/部番</th>
+      <th style="width:52px; text-align:right;">在庫</th>
+      <th style="width:40px;">単位</th>
+      <th style="width:64px;">画像</th>
+      <th style="width:100px;"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for it in items %}
+    <tr>
+      <td style="text-align:center;"><input class="qr-check" type="checkbox" value="{{ it.id }}" style="width:auto;"></td>
+      <td>{{ it.item_code }}</td>
+      <td>{% if it.kind.value == 'shikyu' %}<span class="badge shikyu">支給</span>
+          {% else %}<span class="badge chotatsu">調達</span>{% endif %}</td>
+      <td>{{ it.name }}</td>
+      <td>{{ it.material or '' }}</td>
+      <td style="text-align:right;">{{ it.stock_qty }}</td>
+      <td>{{ it.unit }}</td>
+      <td style="text-align:center; padding:4px;">
+        {% if it.image_data %}
+        <a href="/items/{{ it.id }}/image" target="_blank">
+          <img src="/items/{{ it.id }}/image"
+               style="width:48px; height:48px; object-fit:cover; border-radius:4px; border:1px solid #ddd; display:block; margin:0 auto;">
+        </a>
+        <form method="post" action="/items/{{ it.id }}/image/delete" style="margin-top:2px;"
+              onsubmit="return confirm('「{{ it.item_code }}」の画像を削除しますか？');">
+          <button type="submit" style="font-size:10px; padding:1px 6px; background:#c62828; color:#fff; border:none; border-radius:3px; cursor:pointer;">削除</button>
+        </form>
+        {% else %}
+        <a href="/items/{{ it.id }}/image/edit" style="font-size:11px; color:#888;">＋登録</a>
+        {% endif %}
+      </td>
+      <td style="white-space:nowrap;">
+        <a class="btn gray sm" href="/items/{{ it.id }}/edit">編集</a>
+        <a class="btn gray sm" href="/items/{{ it.id }}/drawings">図面</a>
+        <form method="post" action="/items/{{ it.id }}/delete" style="display:inline;"
+              onsubmit="return confirm('「{{ it.item_code }}」を削除します。よろしいですか？');">
+          <button class="btn sm" type="submit" style="background:#c62828;">削除</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="9" style="text-align:center; color:#888;">品目がありません</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div style="margin-top:12px;">
+  <button class="btn" onclick="printQR()">選択した品目のQRを印刷（A5・2×2）</button>
+</div>
 
 <script>
-  // チェックされたidをカンマ連結して ids=... の単一パラメータにする
-  function prepIds() {
-    const boxes = document.querySelectorAll('input[name="ids"]:checked');
-    if (boxes.length === 0) { alert('印刷する品目を選択してください'); return false; }
+  function printQR() {
+    const boxes = document.querySelectorAll('.qr-check:checked');
+    if (boxes.length === 0) { alert('印刷する品目を選択してください'); return; }
     const ids = Array.from(boxes).map(b => b.value).join(',');
-    const form = document.getElementById('qrform');
-    // 既存のhidden idsを除去して1つにまとめる
-    boxes.forEach(b => b.removeAttribute('name'));
-    const hidden = document.createElement('input');
-    hidden.type = 'hidden'; hidden.name = 'ids'; hidden.value = ids;
-    form.appendChild(hidden);
-    return true;
+    window.open('/qr/print?ids=' + ids, '_blank');
   }
 </script>
 {% endblock %}
