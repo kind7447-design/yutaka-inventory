@@ -22,13 +22,14 @@
     <thead>
       <tr>
         <th style="width:36px;">QR</th>
-        <th style="width:22%;">固有番号</th>
-        <th style="width:60px;">区分</th>
-        <th style="width:18%;">名称</th>
-        <th style="width:15%;">材質/部番</th>
-        <th style="width:60px; text-align:right;">在庫</th>
-        <th style="width:44px;">単位</th>
-        <th style="width:110px;"></th>
+        <th style="width:20%;">固有番号</th>
+        <th style="width:56px;">区分</th>
+        <th style="width:16%;">名称</th>
+        <th style="width:13%;">材質/部番</th>
+        <th style="width:52px; text-align:right;">在庫</th>
+        <th style="width:40px;">単位</th>
+        <th style="width:64px;">画像</th>
+        <th style="width:100px;"></th>
       </tr>
     </thead>
     <tbody>
@@ -42,13 +43,24 @@
         <td>{{ it.material or '' }}</td>
         <td style="text-align:right;">{{ it.stock_qty }}</td>
         <td>{{ it.unit }}</td>
+        <td style="text-align:center; padding:4px;">
+          {% if it.image_data %}
+          <div>
+            <a href="/items/{{ it.id }}/image" target="_blank">
+              <img src="/items/{{ it.id }}/image"
+                   style="width:48px; height:48px; object-fit:cover; border-radius:4px; border:1px solid #ddd; display:block; margin:0 auto;">
+            </a>
+            <form method="post" action="/items/{{ it.id }}/image/delete" style="margin-top:2px;"
+                  onsubmit="return confirm('「{{ it.item_code }}」の画像を削除しますか？');">
+              <button type="submit" style="font-size:10px; padding:1px 6px; background:#c62828; color:#fff; border:none; border-radius:3px; cursor:pointer;">削除</button>
+            </form>
+          </div>
+          {% else %}
+          <a href="/items/{{ it.id }}/image/edit" style="font-size:11px; color:#888;">＋登録</a>
+          {% endif %}
+        </td>
         <td style="white-space:nowrap;">
           <a class="btn gray sm" href="/items/{{ it.id }}/edit">編集</a>
-          {% if it.image_data %}
-          <a class="btn sm" href="/items/{{ it.id }}/image" target="_blank"
-             style="background:#1565c0;">画像確認</a>
-          {% endif %}
-          <a class="btn gray sm" href="/items/{{ it.id }}/image/edit">画像</a>
           <a class="btn gray sm" href="/items/{{ it.id }}/drawings">図面</a>
           <form method="post" action="/items/{{ it.id }}/delete" style="display:inline;"
                 onsubmit="return confirm('「{{ it.item_code }}」を削除します。よろしいですか？');">
@@ -57,7 +69,7 @@
         </td>
       </tr>
       {% else %}
-      <tr><td colspan="8" style="text-align:center; color:#888;">品目がありません</td></tr>
+      <tr><td colspan="9" style="text-align:center; color:#888;">品目がありません</td></tr>
       {% endfor %}
     </tbody>
   </table>
