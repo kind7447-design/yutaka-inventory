@@ -211,15 +211,25 @@ async def item_image_upload(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
 ):
+    import io
+    from PIL import Image, ImageOps
+
     user = _require_login(request, db)
     if not user:
         return RedirectResponse("/login", status_code=303)
     item = db.query(Item).get(item_id)
     if not item:
         return RedirectResponse("/items", status_code=303)
+
     data = await file.read()
-    item.image_data = data
-    item.image_mime = file.content_type or "image/jpeg"
+    img = Image.open(io.BytesIO(data))
+    img = ImageOps.exif_transpose(img)   # スマホ撮影の回転を補正
+    img = img.convert("RGB")
+    img.thumbnail((1200, 1200), Image.LANCZOS)  # 長辺1200pxに縮小
+    buf = io.BytesIO()
+    img.save(buf, format="JPEG", quality=75, optimize=True)
+    item.image_data = buf.getvalue()
+    item.image_mime = "image/jpeg"
     db.commit()
     return RedirectResponse(f"/items/{item_id}/image/edit", status_code=303)
 
