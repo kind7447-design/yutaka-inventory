@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends, Form, Request
-from fastapi.responses import RedirectResponse
+from fastapi import APIRouter, Depends, File, Form, Request, UploadFile
+from fastapi.responses import RedirectResponse, Response
 from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
@@ -178,6 +178,63 @@ def item_delete(item_id: int, request: Request, db: Session = Depends(get_db)):
     db.delete(item)
     db.commit()
     return RedirectResponse("/items", status_code=303)
+
+
+@router.get("/items/{item_id}/image")
+def item_image(item_id: int, request: Request, db: Session = Depends(get_db)):
+    user = _require_login(request, db)
+    if not user:
+        return RedirectResponse("/login", status_code=303)
+    item = db.query(Item).get(item_id)
+    if not item or not item.image_data:
+        return Response(status_code=404)
+    return Response(content=item.image_data, media_type=item.image_mime or "image/jpeg")
+
+
+@router.get("/items/{item_id}/image/edit")
+def item_image_edit(item_id: int, request: Request, db: Session = Depends(get_db)):
+    user = _require_login(request, db)
+    if not user:
+        return RedirectResponse("/login", status_code=303)
+    item = db.query(Item).get(item_id)
+    if not item:
+        return RedirectResponse("/items", status_code=303)
+    return templates.TemplateResponse(
+        request, "items/image.html", {"user": user, "item": item},
+    )
+
+
+@router.post("/items/{item_id}/image")
+async def item_image_upload(
+    item_id: int,
+    request: Request,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+):
+    user = _require_login(request, db)
+    if not user:
+        return RedirectResponse("/login", status_code=303)
+    item = db.query(Item).get(item_id)
+    if not item:
+        return RedirectResponse("/items", status_code=303)
+    data = await file.read()
+    item.image_data = data
+    item.image_mime = file.content_type or "image/jpeg"
+    db.commit()
+    return RedirectResponse(f"/items/{item_id}/image/edit", status_code=303)
+
+
+@router.post("/items/{item_id}/image/delete")
+def item_image_delete(item_id: int, request: Request, db: Session = Depends(get_db)):
+    user = _require_login(request, db)
+    if not user:
+        return RedirectResponse("/login", status_code=303)
+    item = db.query(Item).get(item_id)
+    if item:
+        item.image_data = None
+        item.image_mime = None
+        db.commit()
+    return RedirectResponse(f"/items/{item_id}/image/edit", status_code=303)
 
 
 @router.get("/qr/print")

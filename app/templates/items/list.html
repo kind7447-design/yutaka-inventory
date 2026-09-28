@@ -44,6 +44,11 @@
         <td>{{ it.unit }}</td>
         <td style="white-space:nowrap;">
           <a class="btn gray sm" href="/items/{{ it.id }}/edit">編集</a>
+          {% if it.image_data %}
+          <a class="btn sm" href="/items/{{ it.id }}/image" target="_blank"
+             style="background:#1565c0;">画像確認</a>
+          {% endif %}
+          <a class="btn gray sm" href="/items/{{ it.id }}/image/edit">画像</a>
           <a class="btn gray sm" href="/items/{{ it.id }}/drawings">図面</a>
           <form method="post" action="/items/{{ it.id }}/delete" style="display:inline;"
                 onsubmit="return confirm('「{{ it.item_code }}」を削除します。よろしいですか？');">

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}製品画像 - {{ item.item_code }}{% endblock %}
+{% block content %}
+<h2>製品画像登録 <span style="font-size:14px; color:#666;">{{ item.item_code }}</span></h2>
+<div class="card">
+  {% if item.image_data %}
+  <div style="margin-bottom:16px; text-align:center;">
+    <img src="/items/{{ item.id }}/image" style="max-width:100%; max-height:400px; border:1px solid #ddd;">
+  </div>
+  <form method="post" action="/items/{{ item.id }}/image/delete"
+        onsubmit="return confirm('画像を削除します。よろしいですか？');">
+    <button class="btn" type="submit" style="background:#c62828;">画像を削除</button>
+  </form>
+  <hr style="margin:16px 0;">
+  {% endif %}
+  <form method="post" action="/items/{{ item.id }}/image" enctype="multipart/form-data">
+    <label>{{ '画像を差し替える' if item.image_data else '画像ファイルを選択（JPG / PNG / HEIC）' }}</label>
+    <input type="file" name="file" accept="image/*" required style="margin:8px 0 16px;">
+    <div>
+      <button class="btn" type="submit">アップロード</button>
+      <a class="btn gray" href="/items">品目一覧へ</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -78,6 +78,8 @@ class Item(Base):
     stock_qty = Column(Integer, default=0, nullable=False)
     supplier = Column(String(255))                    # 発注先/支給元
     note = Column(Text)
+    image_data = Column(LargeBinary)                  # 製品画像バイナリ
+    image_mime = Column(String(32))                   # 画像MIMEタイプ
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
