@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block title %}操作マニュアル{% endblock %}
+{% block content %}
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+  <h2>操作マニュアル</h2>
+  <a class="btn gray" href="/">メニューへ</a>
+</div>
+
+<style>
+  .man-section { background:#fff; border:1px solid #dde3ea; border-radius:8px; padding:20px 24px; margin-bottom:16px; }
+  .man-section h3 { margin:0 0 14px; font-size:16px; border-bottom:2px solid #eef3f7; padding-bottom:8px; color:#1a3a5c; }
+  .man-section h4 { margin:16px 0 6px; font-size:14px; font-weight:bold; }
+  .man-steps { padding-left:20px; }
+  .man-steps li { margin:4px 0; }
+  .note-box { background:#e8f1fb; border-left:3px solid #1e6fcc; border-radius:0 6px 6px 0; padding:8px 12px; margin:10px 0; font-size:13px; }
+  .warn-box { background:#fdecea; border-left:3px solid #c62828; border-radius:0 6px 6px 0; padding:8px 12px; margin:10px 0; font-size:13px; }
+  .pill { display:inline-block; font-size:11px; font-weight:bold; padding:1px 7px; border-radius:20px; }
+  .pill-c { background:#fff4e6; color:#cc6600; }
+  .pill-s { background:#e8f6ee; color:#1a7a3a; }
+  .pill-a { background:#f0eaff; color:#4a1999; }
+  table { width:100%; border-collapse:collapse; font-size:13px; margin:8px 0; }
+  th { background:#eef3f7; padding:7px 10px; text-align:left; border:1px solid #dde; }
+  td { padding:7px 10px; border:1px solid #dde; vertical-align:top; }
+</style>
+
+<!-- 1. ログイン -->
+<div class="man-section">
+  <h3>1. ログイン・パスワード変更</h3>
+  <h4>ログイン</h4>
+  <p>ログインIDとパスワードを入力してログインボタンを押す。<br>
+  ※初回アクセス時はサービス起動まで30〜50秒かかる場合があります。</p>
+  <h4>パスワード変更（自分）</h4>
+  <p>画面右上の「パスワード変更」→ 現在のパスワードと新しいパスワード（4文字以上）を入力して保存。</p>
+</div>
+
+<!-- 2. メニュー -->
+<div class="man-section">
+  <h3>2. メニュー画面</h3>
+  <table>
+    <tr><th>カテゴリ</th><th>メニュー</th><th>説明</th></tr>
+    <tr><td rowspan="3"><span class="pill pill-c">調達品</span></td><td>品目マスタ</td><td>調達品の品目一覧・登録・編集</td></tr>
+    <tr><td>発注（注文依頼書＋加工依頼書）</td><td>発注登録・PDF出力</td></tr>
+    <tr><td>発注一覧</td><td>発注履歴確認</td></tr>
+    <tr><td rowspan="3"><span class="pill pill-s">支給品</span></td><td>品目マスタ</td><td>支給品の品目一覧・登録・編集</td></tr>
+    <tr><td>客先準備分 発注</td><td>ユタカ向け注文依頼書発行</td></tr>
+    <tr><td>発注一覧</td><td>発注履歴確認</td></tr>
+    <tr><td rowspan="5">共通</td><td>入荷予定・受入消込</td><td>入荷確認と受け入れ処理</td></tr>
+    <tr><td>使用・仕損報告</td><td>在庫の使用／仕損を記録</td></tr>
+    <tr><td>在庫確認（QR/検索）</td><td>品目検索・QR印刷・画像確認</td></tr>
+    <tr><td>履歴</td><td>受入・使用・発注のログ</td></tr>
+    <tr><td>ユーザー管理</td><td><span class="pill pill-a">管理者のみ</span></td></tr>
+  </table>
+</div>
+
+<!-- 3. 品目マスタ -->
+<div class="man-section">
+  <h3>3. 品目マスタ</h3>
+  <h4>品目を新規登録する</h4>
+  <ol class="man-steps">
+    <li>「品目マスタ」を開き「＋品目登録」をクリック。</li>
+    <li>固有番号（例: USC1549G11）・区分・名称などを入力して保存。</li>
+  </ol>
+  <h4>品目を編集する</h4>
+  <p>一覧の「編集」ボタンから各フィールドを変更。<strong>現在庫数の直接変更</strong>もここから可能。</p>
+  <h4>製品画像を登録・削除する</h4>
+  <ol class="man-steps">
+    <li>一覧の「画像」列の「＋登録」をクリック → 画像ファイルを選択してアップロード。</li>
+    <li>アップロード後は一覧にサムネイルが表示される。サムネイル下の赤「削除」で削除。</li>
+    <li>サムネイルをタップすると別タブで拡大表示。</li>
+  </ol>
+  <div class="note-box">📷 スマホで撮影した写真はそのままアップ可能。自動的に長辺1200px・JPEG圧縮されます。</div>
+  <h4>QRコードを印刷する</h4>
+  <ol class="man-steps">
+    <li>一覧の左端チェックボックスで品目を選択（推奨: 最大4件）。</li>
+    <li>「選択した品目のQRを印刷」をクリック → 別タブで印刷プレビュー。</li>
+    <li>ブラウザの印刷機能でA5用紙に印刷（2×2面付け）。</li>
+  </ol>
+  <h4>品目を削除する</h4>
+  <p>一覧の赤「削除」ボタン → 確認ダイアログでOK。</p>
+  <div class="warn-box">⚠️ 受入・使用・発注の履歴があるものは削除できません。</div>
+</div>
+
+<!-- 4. 発注 -->
+<div class="man-section">
+  <h3>4. 発注（注文依頼書 / 加工依頼書）</h3>
+  <ol class="man-steps">
+    <li>「発注」メニューを開き、発注日・希望納期・発注先・品目・数量を入力。</li>
+    <li>「発注登録」で保存 → 入荷予定が自動作成される。</li>
+    <li>発注一覧から対象を開き、PDFをダウンロード。</li>
+  </ol>
+  <table>
+    <tr><th>PDF種別</th><th>対象</th><th>用紙</th></tr>
+    <tr><td>注文依頼書</td><td>調達品・支給品</td><td>A5横、1枚に最大4明細</td></tr>
+    <tr><td>加工依頼書</td><td>調達品のみ</td><td>A5縦、1品目1ページ</td></tr>
+  </table>
+</div>
+
+<!-- 5. 入荷 -->
+<div class="man-section">
+  <h3>5. 入荷予定・受入消込</h3>
+  <ol class="man-steps">
+    <li>「入荷予定・受入消込」を開く。</li>
+    <li>入荷した品目の行の「受入」ボタンをクリック。</li>
+    <li>受入数量を確認して登録 → 在庫数が自動加算される。</li>
+  </ol>
+</div>
+
+<!-- 6. 使用・仕損 -->
+<div class="man-section">
+  <h3>6. 使用・仕損報告</h3>
+  <ol class="man-steps">
+    <li>「使用・仕損報告」を開く。</li>
+    <li>固有番号を入力して品目を検索。</li>
+    <li>区分（使用 / 仕損）・数量・備考を入力して登録 → 在庫数が自動減算される。</li>
+  </ol>
+</div>
+
+<!-- 7. 在庫確認 -->
+<div class="man-section">
+  <h3>7. 在庫確認（QR・検索）</h3>
+  <p>「在庫確認（QR/検索）」は品目一覧画面です。固有番号または名称で検索できます。</p>
+  <p>品目に貼られたQRコードをスマートフォンで読み取るとその品目の情報を直接表示します。</p>
+</div>
+
+<!-- 8. ユーザー管理 -->
+<div class="man-section">
+  <h3>8. ユーザー管理 <span class="pill pill-a">管理者のみ</span></h3>
+  <h4>ユーザーを追加する</h4>
+  <ol class="man-steps">
+    <li>「ユーザー管理」→「＋ユーザー追加」。</li>
+    <li>ログインID・氏名・パスワード・権限（管理者/一般）を入力して保存。</li>
+  </ol>
+  <h4>パスワードを初期化する</h4>
+  <p>一覧の「PW初期化」ボタン → 新しいパスワードを入力して設定。</p>
+  <h4>ユーザーを無効化・削除する</h4>
+  <p>履歴のないユーザー → 赤「削除」ボタン。<br>
+  履歴があるユーザー → 「編集」から「有効」チェックを外して無効化（ログイン不可）。</p>
+  <div class="warn-box">⚠️ 自分自身は削除・降格・無効化できません。</div>
+  <table>
+    <tr><th>権限</th><th>できること</th></tr>
+    <tr><td><span class="pill pill-a">管理者</span></td><td>全操作 ＋ ユーザー管理・設定変更</td></tr>
+    <tr><td>一般</td><td>品目・発注・入荷・使用・在庫確認・履歴</td></tr>
+  </table>
+</div>
+
+<!-- 9. 設定 -->
+<div class="man-section">
+  <h3>9. 設定</h3>
+  <p>PDFに印刷される会社名・住所・TEL/FAXを編集できます。変更後は「保存」をクリック。</p>
+</div>
+
+<p style="margin-top:20px;"><a class="btn gray" href="/">メニューへ戻る</a></p>
+{% endblock %}

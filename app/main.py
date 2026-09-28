@@ -64,3 +64,11 @@ def home(request: Request, db: Session = Depends(get_db)):
     if not user:
         return RedirectResponse("/login", status_code=303)
     return templates.TemplateResponse(request, "home.html", {"user": user})
+
+
+@app.get("/manual")
+def manual(request: Request, db: Session = Depends(get_db)):
+    user = current_user(request, db)
+    if not user:
+        return RedirectResponse("/login", status_code=303)
+    return templates.TemplateResponse(request, "manual.html", {"user": user})
